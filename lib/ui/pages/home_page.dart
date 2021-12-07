@@ -181,10 +181,11 @@ class _HomePageState extends State<HomePage> {
               color: Get.isDarkMode ? Colors.white : darkGreyClr),
         ),
         actions: [
-          CircleAvatar(
-            radius: 16,
-            backgroundImage: AssetImage("images/girl.jpg"),
-          ),
+          Image.asset('images/logo.jpg', width: 40),
+          // CircleAvatar(
+          //   radius: 20,
+          //   backgroundImage: AssetImage("images/logo.jpg"),
+          // ),
           SizedBox(
             width: 20,
           ),
@@ -295,14 +296,14 @@ class _HomePageState extends State<HomePage> {
                     _taskController.markTaskCompleted(task.id!);
                     Get.back();
                   },
-                  clr: primaryClr),
+                  clr: successClr),
           _buildBottomSheetButton(
               label: "Delete Task",
               onTap: () {
                 _taskController.deleteTask(task);
                 Get.back();
               },
-              clr: Colors.red[300]!),
+              clr: Colors.red[900]!),
           SizedBox(
             height: 20,
           ),
