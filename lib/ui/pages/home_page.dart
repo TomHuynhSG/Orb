@@ -147,7 +147,9 @@ class _HomePageState extends State<HomePage> {
                 CupertinoPageRoute(
                   builder: (context) => AddTaskPage(),
                 ),
-              );
+              ). then ((value) => setState((){
+                _taskController.getTasks();
+              }));
 
               _taskController.getTasks();
             },
