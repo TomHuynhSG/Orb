@@ -330,7 +330,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
           child: Icon(Icons.arrow_back_ios, size: 24, color: primaryClr),
         ),
         actions: [
-          Image.asset('images/logo.jpg', width: 40),
+          Image.asset('images/logo.png', width: 40),
           // CircleAvatar(
           //   radius: 16,
           //   backgroundImage: AssetImage("images/girl.jpg"),
