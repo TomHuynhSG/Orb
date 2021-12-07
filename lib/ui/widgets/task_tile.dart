@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_project_devfest/models/task.dart';
-import 'package:flutter_project_devfest/ui/size_config.dart';
-import 'package:flutter_project_devfest/ui/theme.dart';
+import 'package:orbit/models/task.dart';
+import 'package:orbit/ui/size_config.dart';
+import 'package:orbit/ui/theme.dart';
 
 class TaskTile extends StatelessWidget {
   final Task task;
@@ -33,13 +33,13 @@ class TaskTile extends StatelessWidget {
                 Text(
                   task.title,
                   style: GoogleFonts.lato(
-                    textStyle: TextStyle(
+                    textStyle: const TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
                         color: Colors.white),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 12,
                 ),
                 Row(
@@ -50,7 +50,7 @@ class TaskTile extends StatelessWidget {
                       color: Colors.grey[200],
                       size: 18,
                     ),
-                    SizedBox(width: 4),
+                    const SizedBox(width: 4),
                     Text(
                       "${task.startTime} - ${task.endTime}",
                       style: GoogleFonts.lato(
@@ -60,7 +60,7 @@ class TaskTile extends StatelessWidget {
                     ),
                   ],
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 Text(
                   task.note,
                   style: GoogleFonts.lato(
@@ -81,7 +81,7 @@ class TaskTile extends StatelessWidget {
             child: Text(
               task.isCompleted == 1 ? "COMPLETED" : "TODO",
               style: GoogleFonts.lato(
-                textStyle: TextStyle(
+                textStyle: const TextStyle(
                     fontSize: 10,
                     fontWeight: FontWeight.bold,
                     color: Colors.white),

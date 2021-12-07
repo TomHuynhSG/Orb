@@ -1,6 +1,6 @@
 {
-    "name": "flutter_project_devfest",
-    "short_name": "flutter_project_devfest",
+    "name": "orbit",
+    "short_name": "orbit",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

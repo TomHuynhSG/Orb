@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_project_devfest/ui/size_config.dart';
-import 'package:flutter_project_devfest/ui/theme.dart';
+import 'package:orbit/ui/size_config.dart';
+import 'package:orbit/ui/theme.dart';
 
 class MyButton extends StatelessWidget {
   final Function onTap;

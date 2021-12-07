@@ -9,15 +9,15 @@ import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_project_devfest/controllers/task_controller.dart';
-import 'package:flutter_project_devfest/models/task.dart';
-import 'package:flutter_project_devfest/services/notification_services.dart';
-import 'package:flutter_project_devfest/ui/pages/add_task_page.dart';
-import 'package:flutter_project_devfest/ui/size_config.dart';
-import 'package:flutter_project_devfest/ui/theme.dart';
-import 'package:flutter_project_devfest/ui/widgets/button.dart';
+import 'package:orbit/controllers/task_controller.dart';
+import 'package:orbit/models/task.dart';
+import 'package:orbit/services/notification_services.dart';
+import 'package:orbit/ui/pages/add_task_page.dart';
+import 'package:orbit/ui/size_config.dart';
+import 'package:orbit/ui/theme.dart';
+import 'package:orbit/ui/widgets/button.dart';
 import 'package:intl/intl.dart';
-import 'package:flutter_project_devfest/ui/widgets/task_tile.dart';
+import 'package:orbit/ui/widgets/task_tile.dart';
 
 import '../../services/theme_services.dart';
 
@@ -147,9 +147,9 @@ class _HomePageState extends State<HomePage> {
                 CupertinoPageRoute(
                   builder: (context) => AddTaskPage(),
                 ),
-              ). then ((value) => setState((){
-                _taskController.getTasks();
-              }));
+              ).then((value) => setState(() {
+                    _taskController.getTasks();
+                  }));
 
               _taskController.getTasks();
             },
@@ -166,23 +166,18 @@ class _HomePageState extends State<HomePage> {
         leading: GestureDetector(
           onTap: () {
             ThemeService().switchTheme();
-            // notifyHelper.displayNotification(
-            //   title: "Theme Changed",
-            //   body: Get.isDarkMode
-            //       ? "Light theme activated."
-            //       : "Dark theme activated",
-            // );
-
-            //notifyHelper.scheduledNotification();
-            //notifyHelper.periodicalyNotification();
           },
           child: Icon(
               Get.isDarkMode ? FlutterIcons.sun_fea : FlutterIcons.moon_fea,
               color: Get.isDarkMode ? Colors.white : darkGreyClr),
         ),
         actions: [
-          Image.asset('images/logo.png', width: 40),
-          SizedBox(
+          Icon(
+              Get.isDarkMode
+                  ? FlutterIcons.user_circle_faw
+                  : FlutterIcons.user_circle_o_faw,
+              color: Get.isDarkMode ? Colors.white : darkGreyClr),
+          const SizedBox(
             width: 20,
           ),
         ]);
@@ -191,77 +186,42 @@ class _HomePageState extends State<HomePage> {
   _showTasks() {
     return Expanded(
       child: Obx(() {
-        if (_taskController.taskList.isEmpty) {
-          return _noTaskMsg();
-        } else
-          return ListView.builder(
-              scrollDirection: Axis.vertical,
-              itemCount: _taskController.taskList.length,
-              itemBuilder: (context, index) {
-                Task task = _taskController.taskList[index];
-                if (task.repeat == 'Daily') {
-                  var hour = task.startTime.toString().split(":")[0];
-                  var minutes = task.startTime.toString().split(":")[1];
-                  debugPrint("My time is " + hour);
-                  debugPrint("My minute is " + minutes);
-                  DateTime date = DateFormat.jm().parse(task.startTime);
-                  var myTime = DateFormat("HH:mm").format(date);
-                  /*
-                  print("my date "+date.toString());
-                  print("my time " +myTime);
-                  var t=DateFormat("M/d/yyyy hh:mm a").parse(task.date+" "+task.startTime);
-                  print(t);
-                  print(int.parse(myTime.toString().split(":")[0]));*/
-                  notifyHelper.scheduledNotification(
-                      int.parse(myTime.toString().split(":")[0]),
-                      int.parse(myTime.toString().split(":")[1]),
-                      task);
+        bool isEmpty = true;
+        for (var task in _taskController.taskList) {
+          if (task.date == DateFormat.yMd().format(_selectedDate)) {
+            isEmpty = false;
+          }
+        }
+        if (isEmpty) return _noTaskMsg();
 
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 1375),
-                    child: SlideAnimation(
-                      horizontalOffset: 300.0,
-                      child: FadeInAnimation(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  showBottomSheet(context, task);
-                                },
-                                child: TaskTile(task)),
-                          ],
-                        ),
-                      ),
+        return ListView.builder(
+            scrollDirection: Axis.vertical,
+            itemCount: _taskController.taskList.length,
+            itemBuilder: (context, index) {
+              Task task = _taskController.taskList[index];
+              if (task.date != DateFormat.yMd().format(_selectedDate)) return Container();
+              notifyHelper.scheduledNotification(task);
+
+              return AnimationConfiguration.staggeredList(
+                position: index,
+                duration: const Duration(milliseconds: 1375),
+                child: SlideAnimation(
+                  horizontalOffset: 300.0,
+                  child: FadeInAnimation(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        GestureDetector(
+                            onTap: () {
+                              showBottomSheet(context, task);
+                            },
+                            child: TaskTile(task)),
+                      ],
                     ),
-                  );
-                }
-                if (task.date == DateFormat.yMd().format(_selectedDate)) {
-                  //notifyHelper.scheduledNotification();
-                  return AnimationConfiguration.staggeredList(
-                    position: index,
-                    duration: const Duration(milliseconds: 1375),
-                    child: SlideAnimation(
-                      horizontalOffset: 300.0,
-                      child: FadeInAnimation(
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                                onTap: () {
-                                  showBottomSheet(context, task);
-                                },
-                                child: TaskTile(task)),
-                          ],
-                        ),
-                      ),
-                    ),
-                  );
-                } else {
-                  return Container();
-                }
-              });
+                  ),
+                ),
+              );
+            });
       }),
     );
   }
@@ -283,7 +243,7 @@ class _HomePageState extends State<HomePage> {
                 borderRadius: BorderRadius.circular(10),
                 color: Get.isDarkMode ? Colors.grey[600] : Colors.grey[300]),
           ),
-          Spacer(),
+          const Spacer(),
           task.isCompleted == 1
               ? Container()
               : _buildBottomSheetButton(
@@ -299,9 +259,9 @@ class _HomePageState extends State<HomePage> {
                 _taskController.deleteTask(task);
                 Get.back();
               },
-              clr: Colors.red[900]!),
-          SizedBox(
-            height: 20,
+              clr: primaryClr),
+          const SizedBox(
+            height: 15,
           ),
           _buildBottomSheetButton(
               label: "Close",
@@ -309,9 +269,6 @@ class _HomePageState extends State<HomePage> {
                 Get.back();
               },
               isClose: true),
-          SizedBox(
-            height: 20,
-          ),
         ]),
       ),
     );
@@ -325,8 +282,8 @@ class _HomePageState extends State<HomePage> {
     return GestureDetector(
       onTap: () => onTap(),
       child: Container(
-        margin: EdgeInsets.symmetric(vertical: 4),
-        height: 55,
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        height: 50,
         width: SizeConfig.screenWidth * 0.9,
         decoration: BoxDecoration(
           border: Border.all(
@@ -354,20 +311,16 @@ class _HomePageState extends State<HomePage> {
   _noTaskMsg() {
     return Stack(
       children: [
-        AnimatedPositioned(
-          duration: Duration(milliseconds: 2000),
-          left: left,
-          top: top,
-          child: Container(
+          Container(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SvgPicture.asset(
-                "images/task.svg",
+              Image.asset(
+                "images/logo.png",
                 color: primaryClr.withOpacity(0.5),
                 height: 90,
-                semanticsLabel: 'Task',
+                // semanticsLabel: 'Task',
               ),
               Padding(
                 padding:
@@ -378,12 +331,11 @@ class _HomePageState extends State<HomePage> {
                   style: subTitleTextStle,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 80,
               ),
             ],
           )),
-        )
       ],
     );
   }

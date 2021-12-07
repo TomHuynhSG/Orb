@@ -1,76 +1,88 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:flutter_project_devfest/models/task.dart';
-import 'package:flutter_project_devfest/ui/theme.dart';
+import 'package:orbit/models/task.dart';
+import 'package:orbit/ui/theme.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+
+var localId = 0;
 class NotifyHelper {
-  FlutterLocalNotificationsPlugin
-  flutterLocalNotificationsPlugin =
-  FlutterLocalNotificationsPlugin(); //
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin(); //
   late String selectedNotificationPayload;
   late BuildContext _context;
 
+  final Map<int?, bool> scheduledTask = {};
   final BehaviorSubject<String> selectNotificationSubject =
-  BehaviorSubject<String>();
-
+      BehaviorSubject<String>();
 
   initializeNotification(BuildContext context) async {
     _configureSelectNotificationSubject();
     _context = context;
     await _configureLocalTimeZone();
-    // await requestIOSPermissions(flutterLocalNotificationsPlugin);
+
+    FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+// initialise the plugin. app_icon needs to be a added as a drawable resource to the Android head project
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
     final IOSInitializationSettings initializationSettingsIOS =
-    IOSInitializationSettings(
-        requestSoundPermission: false,
-        requestBadgePermission: false,
-        requestAlertPermission: false,
-        onDidReceiveLocalNotification: onDidReceiveLocalNotification
-    );
+        IOSInitializationSettings(
+            onDidReceiveLocalNotification: onDidReceiveLocalNotification);
+    const MacOSInitializationSettings initializationSettingsMacOS =
+        MacOSInitializationSettings();
     final InitializationSettings initializationSettings =
-    InitializationSettings(
-      iOS: initializationSettingsIOS,
-    );
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS,
+            macOS: initializationSettingsMacOS);
 
     await flutterLocalNotificationsPlugin.initialize(initializationSettings,
         onSelectNotification: (String? payload) async {
-          if(payload == null) return;    
-          selectNotificationSubject.add(payload);
-        });
+      if (payload == null) return;
+      selectNotificationSubject.add(payload);
+    });
   }
-  void requestIOSPermissions(
-      ) {
+
+  void requestIOSPermissions() {
     flutterLocalNotificationsPlugin
         .resolvePlatformSpecificImplementation<
-        IOSFlutterLocalNotificationsPlugin>()
+            IOSFlutterLocalNotificationsPlugin>()
         ?.requestPermissions(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
+          alert: true,
+          badge: true,
+          sound: true,
+        );
   }
+
   Future<void> _configureLocalTimeZone() async {
     tz.initializeTimeZones();
     final String timeZoneName = await FlutterNativeTimezone.getLocalTimezone();
     tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
-  /* Future selectNotification(String payload) async {
-    if (payload != null) {
-      //selectedNotificationPayload = "The best";
-      selectNotificationSubject.add(payload);
-      print('notification payload: $payload');
-    } else {
-      print("Notification Done");
-    }
-     Get.to(()=>SecondScreen(selectedNotificationPayload));
-  }*/
+  displayNotification({required String title, required String body}) async {
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+        'your channel id', 'your channel name',
+        importance: Importance.max, priority: Priority.high);
+    var iOSPlatformChannelSpecifics = const IOSNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+      payload: 'Default_Sound',
+    );
+  }
 
   void onDidReceiveLocalNotification(
       int id, String? title, String? body, String? payload) async {
@@ -83,7 +95,7 @@ class NotifyHelper {
         actions: [
           CupertinoDialogAction(
             isDefaultAction: true,
-            child: Text('Ok'),
+            child: const Text('Ok'),
             onPressed: () async {
               Navigator.of(context, rootNavigator: true).pop();
               await Navigator.push(
@@ -99,67 +111,55 @@ class NotifyHelper {
     );
   }
 
-  displayNotification({required String title,required String body}) async {
-    var androidPlatformChannelSpecifics = new AndroidNotificationDetails(
-        'your channel id', 'your channel name',
-        importance: Importance.max, priority: Priority.high);
-    var iOSPlatformChannelSpecifics = new IOSNotificationDetails();
-    var platformChannelSpecifics = new NotificationDetails(
-        android: androidPlatformChannelSpecifics, iOS: iOSPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      'You change your theme',
-      'You changed your theme back !',
-      platformChannelSpecifics,
-      payload: 'Default_Sound',
-    );
-  }
-  tz.TZDateTime _nextInstanceOfTenAM(int hour, int minutes) {
-    final tz.TZDateTime now = tz.TZDateTime.now(tz.local);
-    tz.TZDateTime scheduledDate =
-    tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minutes);
-    if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(const Duration(days: 1));
+  scheduledNotification(Task task) {
+    if (task.isCompleted == 1 || scheduledTask[task.id] == true) return;
+    if (task.id != null) scheduledTask[task.id] = true;
+
+    DateTime now = DateTime.now();
+
+    DateTime start = DateFormat('dd/MM/yyyy HH:mm aa')
+        .parse('${task.date} ${task.startTime}');
+    DateTime end =
+        DateFormat('dd/MM/yyyy HH:mm aa').parse('${task.date} ${task.endTime}');
+
+    tz.TZDateTime tzStart = tz.TZDateTime(
+        tz.local, start.year, start.month, start.day, start.hour, start.minute);
+    tz.TZDateTime tzEnd = tz.TZDateTime(
+        tz.local, end.year, end.month, end.day, end.hour, end.minute);
+
+    tz.TZDateTime tzNow = tz.TZDateTime(
+        tz.local, now.year, now.day, now.month, now.hour, now.minute);
+
+    for (var tz in [tzStart, tzEnd]) {
+      flutterLocalNotificationsPlugin.zonedSchedule(
+        localId++,
+        tz == tzStart
+            ? 'You have incoming task at ${task.startTime}'
+            : 'Your task end at ${task.endTime}',
+        'Tap for more details',
+        tz,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'your channel id',
+            'your channel name',
+            color: Colors.grey,
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
+        ),
+        androidAllowWhileIdle: true,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: "${task.title}|${task.note}|${task.startTime}|",
+      );
     }
-
-    return scheduledDate;
   }
-  scheduledNotification(int hour, int minutes,Task task) async {
 
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      task.id!,
-      task.title,
-      task.note,
-      _nextInstanceOfTenAM(hour, minutes),
-      //tz.TZDateTime.now(tz.local).add(const Duration(days:0, minutes: 0, seconds: 15)),
-      const NotificationDetails(
-          android: AndroidNotificationDetails('your channel id',
-              'your channel name')),
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-      UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.time,
-      payload: "${task.title}|"+"${task.note}|"+"${task.startTime}|",
-    );
-    /*
-        if payload crushes try to do flutter clean and reboot
-         */
-  }
   void _configureSelectNotificationSubject() {
     selectNotificationSubject.stream.listen((String payload) async {
-      debugPrint("My payload is "+payload);
-      await Get.to(()=>SecondScreen(payload));
+      await Get.to(() => SecondScreen(payload));
     });
-  }
-  periodicalyNotification() async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-    AndroidNotificationDetails('repeating channel id',
-        'repeating channel name');
-    const NotificationDetails platformChannelSpecifics =
-    NotificationDetails(android: androidPlatformChannelSpecifics);
-    await flutterLocalNotificationsPlugin.periodicallyShow(0, 'repeating title',
-        'repeating body', RepeatInterval.everyMinute, platformChannelSpecifics,
-        androidAllowWhileIdle: true);
   }
 }
 
@@ -185,131 +185,122 @@ class SecondScreenState extends State<SecondScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(' ${_payload.toString().split("|")[0] ?? 'No title'}'),
+        title: Text(' ${_payload.toString().split("|")[0]}'),
       ),
       body: Container(
-
-        child: Column(
-            children:[
-              SizedBox(height: 40,),
-              Container(
-                child: Column(
-                    children:[
-                      Text("Hello, DBestech", style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w900,
-                          color:Color(0xFF162339)
-                      ),),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text("You have a new reminder", style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w300,
-                          color:Colors.grey
-                      ),),
-                    ]
-
-                ),
-              ),
-              SizedBox(height: 40,),
-              Expanded(
-                child: Container(
-                  width: double.maxFinite,
-                  padding:const EdgeInsets.only(left: 30, right: 30, top:50),
-                  margin: const EdgeInsets.only(left: 30, right: 30),
-                  //child:Text('${_payload}'),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children:[
-                        Row(
-                          children: [
-                            Icon(Icons.text_format,
-                                size:35,
-                                color:Colors.white
-                            ),
-                            SizedBox(width: 10,),
-                            Text("Title",
-                              style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 30
-                              ),
-                            )
-                          ],
+        height: double.maxFinite,
+        child: Column(children: [
+          const SizedBox(
+            height: 40,
+          ),
+          Column(children: const [
+            Text("Hello, Anonymous",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.w800,
+                  // color: Color(0xFF162339)),
+                )),
+            SizedBox(
+              height: 10,
+            ),
+            Text("You have a reminder",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300,
+                  // color: Colors.grey),
+                )),
+          ]),
+          const SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Container(
+              width: double.maxFinite,
+              padding: const EdgeInsets.only(left: 30, right: 30, top: 30),
+              margin: const EdgeInsets.only(left: 30, right: 30),
+              //child:Text('${_payload}'),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: const [
+                        Icon(Icons.text_format, size: 35, color: Colors.white),
+                        SizedBox(
+                          width: 10,
                         ),
-                        SizedBox(height: 20,),
-                        Text('${_payload.toString().split("|")[0]??'No message'}',
-                          style: TextStyle(
-                              color:Colors.white,
-                              fontSize: 20
-                          ),
-                        ),
-                        SizedBox(height: 20,),
-                        Row(
-                          children: [
-                            Icon(Icons.description,
-                                size:35,
-                                color:Colors.white
-                            ),
-                            SizedBox(width: 10,),
-                            Text("Description",
-                              style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 30
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 20,),
-                        Text('${_payload.toString().split("|")[1]??'No message'}',
-                          style: TextStyle(
-                              color:Colors.white,
-                              fontSize: 20
-                          ),
-                        ),
-                        SizedBox(height: 20,),
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_today_outlined,
-                                size:35,
-                                color:Colors.white
-                            ),
-                            SizedBox(width: 10,),
-                            Text("Date",
-                              style: TextStyle(
-                                  color:Colors.white,
-                                  fontSize: 30
-                              ),
-                            )
-                          ],
-                        ),
-                        SizedBox(height: 20,),
-                        Text('${_payload.toString().split("|")[2]??'No message'}',
-                          style: TextStyle(
-                              color:Colors.white,
-                              fontSize: 20
-                          ),
+                        Text(
+                          "Title",
+                          style: TextStyle(color: Colors.white, fontSize: 28),
                         )
-                      ]
-                  ),
-                  decoration: BoxDecoration(
-                      color:primaryClr,
-                      borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(50),
-                          topLeft: Radius.circular(50),
-                          bottomRight: Radius.circular(50),
-                          bottomLeft: Radius.circular(50)
-                      )
-                  ),
-                ),
-              ),
-              SizedBox(height: 140,)
-            ]
-
-
-        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      _payload.toString().split("|")[0],
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: const [
+                        Icon(Icons.description, size: 30, color: Colors.white),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "Description",
+                          style: TextStyle(color: Colors.white, fontSize: 28),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      _payload.toString().split("|")[1],
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      children: const [
+                        Icon(Icons.calendar_today,
+                            size: 28, color: Colors.white),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "Date",
+                          style: TextStyle(color: Colors.white, fontSize: 28),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Text(
+                      _payload.toString().split("|")[2],
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    )
+                  ]),
+              decoration: const BoxDecoration(
+                  color: primaryClr,
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(50),
+                      topLeft: Radius.circular(50),
+                      bottomRight: Radius.circular(50),
+                      bottomLeft: Radius.circular(50))),
+            ),
+          ),
+          const SizedBox(
+            height: 140,
+          )
+        ]),
       ),
     );
   }
 }
-

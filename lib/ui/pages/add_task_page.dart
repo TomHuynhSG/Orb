@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 // ignore: import_of_legacy_library_into_null_safe
 import 'package:flutter_icons/flutter_icons.dart';
 import 'package:get/get.dart';
-import 'package:flutter_project_devfest/controllers/task_controller.dart';
-import 'package:flutter_project_devfest/models/task.dart';
-import 'package:flutter_project_devfest/ui/theme.dart';
-import 'package:flutter_project_devfest/ui/widgets/button.dart';
-import 'package:flutter_project_devfest/ui/widgets/input_field.dart';
-import 'package:intl/intl.dart';
-import 'package:flutter_project_devfest/ui/pages/home_page.dart';
+import 'package:orbit/controllers/task_controller.dart';
+import 'package:orbit/models/task.dart';
+import 'package:orbit/ui/theme.dart';
+import 'package:orbit/ui/widgets/button.dart';
+import 'package:orbit/ui/widgets/input_field.dart';
+import 'package:intl/intl.dart'; 
+import 'package:orbit/ui/pages/home_page.dart';
 import 'package:flutter/cupertino.dart';
 
 class AddTaskPage extends StatefulWidget {
@@ -42,28 +42,19 @@ class _AddTaskPageState extends State<AddTaskPage> {
   List<String> repeatList = [
     'None',
     'Daily',
-    'Weekly',
-    'Monthly',
   ];
 
   @override
   Widget build(BuildContext context) {
-    //Below shows the time like Sep 15, 2021
-    //print(new DateFormat.yMMMd().format(new DateTime.now()));
-    print(" starttime " + _startTime);
-    final now = new DateTime.now();
+    final now = DateTime.now();
     final dt = DateTime(
         now.year, now.month, now.day, now.hour, now.minute, now.second);
     final format = DateFormat.jm();
-    print(format.format(dt));
-    print(_selectedDate);
-    print("add Task date: " + DateFormat('dd/MM/yyyy').format(_selectedDate));
-    //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
     return Scaffold(
       backgroundColor: context.theme.backgroundColor,
       appBar: _appBar(),
       body: Container(
-        padding: EdgeInsets.symmetric(horizontal: 20.0),
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,81 +127,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   )
                 ],
               ),
-              InputField(
-                title: "Remind",
-                hint: "$_selectedRemind minutes early",
-                widget: Row(
-                  children: [
-                    DropdownButton<String>(
-                        //value: _selectedRemind.toString(),
-                        icon: Icon(
-                          Icons.keyboard_arrow_down,
-                          color: Colors.grey,
-                        ),
-                        iconSize: 32,
-                        elevation: 4,
-                        style: subTitleTextStle,
-                        underline: Container(height: 0),
-                        onChanged: (String? newValue) {
-                          if (newValue == null) return;
-
-                          setState(() {
-                            _selectedRemind = int.parse(newValue);
-                          });
-                        },
-                        items: remindList
-                            .map<DropdownMenuItem<String>>((int value) {
-                          return DropdownMenuItem<String>(
-                            value: value.toString(),
-                            child: Text(value.toString()),
-                          );
-                        }).toList()),
-                    SizedBox(width: 6),
-                  ],
-                ),
-              ),
-              InputField(
-                title: "Repeat",
-                hint: _selectedRepeat,
-                widget: Row(
-                  children: [
-                    Container(
-                      child: DropdownButton<String>(
-                          dropdownColor: Colors.blueGrey,
-                          //value: _selectedRemind.toString(),
-                          icon: Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.grey,
-                          ),
-                          iconSize: 32,
-                          elevation: 4,
-                          style: subTitleTextStle,
-                          underline: Container(
-                            height: 6,
-                          ),
-                          onChanged: (String? newValue) {
-                            if (newValue == null) return;
-
-                            setState(() {
-                              _selectedRepeat = newValue;
-                            });
-                          },
-                          items: repeatList
-                              .map<DropdownMenuItem<String>>((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(
-                                value,
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            );
-                          }).toList()),
-                    ),
-                    SizedBox(width: 6),
-                  ],
-                ),
-              ),
-              SizedBox(
+              const SizedBox(
                 height: 18.0,
               ),
               Row(
@@ -226,7 +143,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 30.0,
               ),
             ],
@@ -256,7 +173,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
       task: Task(
         note: _noteController.text,
         title: _titleController.text,
-        date: DateFormat.yMd().format(_selectedDate),
+        date: DateFormat.yMd('en_US').format(_selectedDate),
         startTime: _startTime,
         endTime: _endTime,
         remind: _selectedRemind,
@@ -296,7 +213,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                           ? pinkClr
                           : yellowClr,
                   child: index == _selectedColor
-                      ? Center(
+                      ? const Center(
                           child: Icon(
                             Icons.done,
                             color: Colors.white,
@@ -320,62 +237,29 @@ class _AddTaskPageState extends State<AddTaskPage> {
         leading: GestureDetector(
           onTap: () {
             Navigator.pop(context);
-            //        Navigator.pushReplacement(
-            // context,
-            // CupertinoPageRoute(
-            //     builder: (context) => HomePage(),
-            // ),
-// );
           },
-          child: Icon(Icons.arrow_back_ios, size: 24, color: primaryClr),
+          child: const Icon(Icons.arrow_back_ios, size: 24, color: primaryClr),
         ),
         actions: [
-          Image.asset('images/logo.png', width: 40),
-          // CircleAvatar(
-          //   radius: 16,
-          //   backgroundImage: AssetImage("images/girl.jpg"),
-          // ),
-          SizedBox(
+          Icon(
+              Get.isDarkMode ? FlutterIcons.user_circle_faw : FlutterIcons.user_circle_o_faw,
+              color: Get.isDarkMode ? Colors.white : darkGreyClr),
+          const SizedBox(
             width: 20,
           ),
         ]);
   }
 
-  // _compareTime() {
-  //   print("compare time");
-  //   print(_startTime);
-  //   print(_endTime);
-
-  //   var _start = double.parsestartTime);
-  //   var _end = toDouble(_endTime);
-
-  //   print(_start);
-  //   print(_end);
-
-  //   if (_start > _end) {
-  //     Get.snackbar(
-  //       "Invalid!",
-  //       "Time duration must be positive.",
-  //       snackPosition: SnackPosition.BOTTOM,
-  //       overlayColor: context.theme.backgroundColor,
-  //     );
-  //   }
-  // }
-
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
   _getTimeFromUser({required bool isStartTime}) async {
     var _pickedTime = await _showTimePicker();
-    print(_pickedTime.format(context));
     String _formatedTime = _pickedTime.format(context);
-    print(_formatedTime);
-    if (_pickedTime == null)
-      print("time canceld");
-    else if (isStartTime)
+    if (isStartTime) {
       setState(() {
         _startTime = _formatedTime;
       });
-    else if (!isStartTime) {
+    } else if (!isStartTime) {
       setState(() {
         _endTime = _formatedTime;
       });

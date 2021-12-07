@@ -1,4 +1,4 @@
-name: flutter_project_devfest
+name: orbit
 description: A new Flutter project.
 
 # The following line prevents the package from being accidentally published to
@@ -45,7 +45,11 @@ dependencies:
   google_fonts: 
   sqflite: 
   rxdart:
-
+  flutter_launcher_icons:
+flutter_icons:
+    android: "launcher_icon"
+    ios: true
+    image_path: "images/logo.png"
 dev_dependencies:
   flutter_test:
     sdk: flutter

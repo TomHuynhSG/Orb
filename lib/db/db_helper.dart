@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:flutter_project_devfest/models/task.dart';
+import 'package:orbit/models/task.dart';
 
 class DBHelper {
   static Database? _db;
@@ -10,12 +10,10 @@ class DBHelper {
   static Future<void> initDb() async {
     try {
       String _path = await getDatabasesPath() + 'tasks.db';
-      debugPrint("in database path");
       _db = await openDatabase(
         _path,
         version: _version,
         onCreate: (db, version) {
-          debugPrint("creating a new one");
           return db.execute(
             "CREATE TABLE $_tableName("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -34,7 +32,6 @@ class DBHelper {
   }
 
   static Future<int> insert(Task task) async {
-    print("insert function called");
     return await _db!.insert(_tableName, task.toJson());
   }
   static Future<int> delete(Task task) async =>
@@ -42,11 +39,9 @@ class DBHelper {
           whereArgs: [task.id]);
 
   static Future<List<Map<String, dynamic>>> query() async {
-    print("query function called");
     return _db!.query(_tableName);
   }
   static Future<int> update(int id) async {
-    print("update function called");
     return await _db!.rawUpdate('''
     UPDATE tasks   
     SET isCompleted = ?

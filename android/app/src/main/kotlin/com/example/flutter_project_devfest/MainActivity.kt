@@ -1,4 +1,4 @@
-package com.example.flutter_project_devfest
+package com.example.orbit
 
 import io.flutter.embedding.android.FlutterActivity
 
