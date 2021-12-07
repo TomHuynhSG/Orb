@@ -85,7 +85,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   controller: _noteController),
               InputField(
                 title: "Date",
-                hint: DateFormat.yMd().format(_selectedDate),
+                hint: DateFormat.ydM().format(_selectedDate),
                 widget: IconButton(
                   icon: (Icon(
                     FlutterIcons.calendar_ant,
