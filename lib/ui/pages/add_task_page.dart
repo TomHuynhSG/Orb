@@ -56,7 +56,8 @@ class _AddTaskPageState extends State<AddTaskPage> {
         now.year, now.month, now.day, now.hour, now.minute, now.second);
     final format = DateFormat.jm();
     print(format.format(dt));
-    print("add Task date: " + DateFormat.yMd().format(_selectedDate));
+    print(_selectedDate);
+    print("add Task date: " + DateFormat('dd/MM/yyyy').format(_selectedDate));
     //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
     return Scaffold(
       backgroundColor: context.theme.backgroundColor,
@@ -85,7 +86,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   controller: _noteController),
               InputField(
                 title: "Date",
-                hint: DateFormat.ydM().format(_selectedDate),
+                hint: DateFormat('dd/MM/yyyy').format(_selectedDate),
                 widget: IconButton(
                   icon: (Icon(
                     FlutterIcons.calendar_ant,
