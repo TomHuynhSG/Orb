@@ -188,7 +188,15 @@ class _HomePageState extends State<HomePage> {
       child: Obx(() {
         bool isEmpty = true;
         for (var task in _taskController.taskList) {
-          if (task.date == DateFormat.yMd().format(_selectedDate)) {
+          DateTime startDate = DateTime.parse(task.startDate);
+          DateTime endDate = DateTime.parse(task.endDate);
+
+            if (startDate.year == _selectedDate.year &&
+                  startDate.day == _selectedDate.day &&
+                  startDate.month == _selectedDate.month ||
+              endDate.year == _selectedDate.year &&
+                  endDate.day == _selectedDate.day &&
+                  endDate.month == _selectedDate.month || startDate.isBefore(_selectedDate) && endDate.isAfter(_selectedDate)) {
             isEmpty = false;
           }
         }
@@ -199,9 +207,18 @@ class _HomePageState extends State<HomePage> {
             itemCount: _taskController.taskList.length,
             itemBuilder: (context, index) {
               Task task = _taskController.taskList[index];
-              if (task.date != DateFormat.yMd().format(_selectedDate)) return Container();
-              notifyHelper.scheduledNotification(task);
+              DateTime startDate = DateTime.parse(task.startDate);
+              DateTime endDate = DateTime.parse(task.endDate);
+              if (startDate.year != _selectedDate.year &&
+                      startDate.day != _selectedDate.day &&
+                      startDate.month != _selectedDate.month ||
+                  endDate.year != _selectedDate.year &&
+                      endDate.day != _selectedDate.day &&
+                      endDate.month != _selectedDate.month || startDate.day > _selectedDate.day || endDate.day < _selectedDate.day)  {
+                return Container();
+              }
 
+              notifyHelper.scheduledNotification(task);
               return AnimationConfiguration.staggeredList(
                 position: index,
                 duration: const Duration(milliseconds: 1375),
@@ -250,6 +267,7 @@ class _HomePageState extends State<HomePage> {
                   label: "Task Completed",
                   onTap: () {
                     _taskController.markTaskCompleted(task.id!);
+                    notifyHelper.cancelScheduledNotification(task);
                     Get.back();
                   },
                   clr: successClr),
@@ -257,6 +275,7 @@ class _HomePageState extends State<HomePage> {
               label: "Delete Task",
               onTap: () {
                 _taskController.deleteTask(task);
+                notifyHelper.cancelScheduledNotification(task);
                 Get.back();
               },
               clr: primaryClr),

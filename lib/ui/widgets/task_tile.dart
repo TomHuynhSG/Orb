@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:orbit/models/task.dart';
 import 'package:orbit/ui/size_config.dart';
 import 'package:orbit/ui/theme.dart';
+import 'package:intl/intl.dart';
 
 class TaskTile extends StatelessWidget {
   final Task task;
@@ -13,13 +14,22 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    DateTime startDate = DateTime.parse(task.startDate);
+    DateTime endDate = DateTime.parse(task.endDate);
+
+    String ymdStartDate = DateFormat('dd/MM/yyyy').format(startDate);
+    String ymdEndDate = DateFormat('dd/MM/yyyy').format(endDate);
+
+    String hmStartDate = DateFormat('HH:mm aa').format(startDate);
+    String hmEndDate = DateFormat('HH:mm aa').format(endDate);
+
     return Container(
       padding:
           EdgeInsets.symmetric(horizontal: getProportionateScreenWidth(20)),
       width: SizeConfig.screenWidth,
       margin: EdgeInsets.only(bottom: getProportionateScreenHeight(12)),
       child: Container(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         //  width: SizeConfig.screenWidth * 0.78,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
@@ -46,13 +56,34 @@ class TaskTile extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Icon(
-                      FlutterIcons.clock_faw5,
+                      FlutterIcons.play_fou,
                       color: Colors.grey[200],
-                      size: 18,
+                      size: 16,
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      "${task.startTime} - ${task.endTime}",
+                      '$ymdStartDate - $hmStartDate',
+                      style: GoogleFonts.lato(
+                        textStyle:
+                            TextStyle(fontSize: 13, color: Colors.grey[100]),
+                      ),
+                    ),
+                  ],
+                ),
+                 const SizedBox(
+                  height: 8,
+                ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Icon(
+                      FlutterIcons.stop_fou,
+                      color: Colors.grey[200],
+                      size: 16,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      "$ymdEndDate - $hmEndDate",
                       style: GoogleFonts.lato(
                         textStyle:
                             TextStyle(fontSize: 13, color: Colors.grey[100]),

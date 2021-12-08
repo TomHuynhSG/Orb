@@ -9,7 +9,7 @@
 Orb is an easy-to-use task manager app that help you manage your daily struggles, make it easier for you to achieve success. Orb posseses these following features:
 - Dark/Light theme
 
-<img src="https://i.imgur.com/dUkMVdQ.png" width="230" > | <img src="https://i.imgur.com/zIaiQ1B.png" width="230" >
+<img src="https://i.imgur.com/dUkMVdQ.png" width="230" > <img src="https://i.imgur.com/zIaiQ1B.png" width="230" >
 
 ## 🔧 Current Functionality
 - Scrollable calendar match with your time zone

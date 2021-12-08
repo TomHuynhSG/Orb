@@ -17,16 +17,14 @@ class DBHelper {
           return db.execute(
             "CREATE TABLE $_tableName("
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, "
-                "title STRING, note TEXT, date STRING, "
-                "startTime STRING, endTime STRING, "
-                "remind INTEGER, repeat STRING, "
+                "title STRING, note TEXT, "
+                "startDate STRING, endDate STRING, "
                 "color INTEGER, "
                 "isCompleted INTEGER)",
           );
         },
       );
     } catch (e) {
-      
       print('error $e');
     }
   }

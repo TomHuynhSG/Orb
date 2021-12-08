@@ -11,14 +11,13 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-var localId = 0;
 class NotifyHelper {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin(); //
   late String selectedNotificationPayload;
   late BuildContext _context;
 
-  final Map<int?, bool> scheduledTask = {};
+  final Map<int?, List<int>> scheduledTask = {};
   final BehaviorSubject<String> selectNotificationSubject =
       BehaviorSubject<String>();
 
@@ -67,7 +66,7 @@ class NotifyHelper {
     tz.setLocalLocation(tz.getLocation(timeZoneName));
   }
 
-  displayNotification({required String title, required String body}) async {
+  displayNotification({required String title, required String body, required String payload}) async {
     var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
         'your channel id', 'your channel name',
         importance: Importance.max, priority: Priority.high);
@@ -80,7 +79,7 @@ class NotifyHelper {
       title,
       body,
       platformChannelSpecifics,
-      payload: 'Default_Sound',
+      payload: payload,
     );
   }
 
@@ -111,48 +110,87 @@ class NotifyHelper {
     );
   }
 
+  cancelScheduledNotification(Task task) {
+    if(scheduledTask.containsKey(task.id)) {
+      for(var id in scheduledTask[task.id]!) {
+        flutterLocalNotificationsPlugin.cancel(id);
+      }
+    }
+  }
+
   scheduledNotification(Task task) {
-    if (task.isCompleted == 1 || scheduledTask[task.id] == true) return;
-    if (task.id != null) scheduledTask[task.id] = true;
+    if (task.isCompleted == 1 || (scheduledTask.containsKey(task.id))) return;
+    if (task.id != null) {
+      scheduledTask[task.id] = [
+        DateTime.now().hashCode,
+        DateTime.now().hashCode
+      ];
+    }
 
     DateTime now = DateTime.now();
 
-    DateTime start = DateFormat('dd/MM/yyyy HH:mm aa')
-        .parse('${task.date} ${task.startTime}');
-    DateTime end =
-        DateFormat('dd/MM/yyyy HH:mm aa').parse('${task.date} ${task.endTime}');
+    DateTime start = DateTime.parse(task.startDate);
+    DateTime end = DateTime.parse(task.endDate);
 
+    String ymdStart = DateFormat('dd/MM/yyyy').format(start);
+    String ymdEnd = DateFormat('dd/MM/yyyy').format(end);
+
+    String hmStart = DateFormat('HH:mm aa').format(start);
+    String hmEnd = DateFormat('HH:mm aa').format(end);
+
+    String ymdHmStart = DateFormat('dd/MM/yyyy HH:mm').format(start);
+    String ymdHmEnd = DateFormat('dd/MM/yyyy HH:mm').format(end);
+    String ymdHmNow = DateFormat('dd/MM/yyyy HH:mm').format(now);
+
+    
     tz.TZDateTime tzStart = tz.TZDateTime(
         tz.local, start.year, start.month, start.day, start.hour, start.minute);
+
     tz.TZDateTime tzEnd = tz.TZDateTime(
         tz.local, end.year, end.month, end.day, end.hour, end.minute);
 
     tz.TZDateTime tzNow = tz.TZDateTime(
         tz.local, now.year, now.day, now.month, now.hour, now.minute);
 
-    for (var tz in [tzStart, tzEnd]) {
-      flutterLocalNotificationsPlugin.zonedSchedule(
-        localId++,
-        tz == tzStart
-            ? 'You have incoming task at ${task.startTime}'
-            : 'Your task end at ${task.endTime}',
-        'Tap for more details',
-        tz,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'your channel id',
-            'your channel name',
-            color: Colors.grey,
-            importance: Importance.max,
-            priority: Priority.high,
+    String payload = "${task.title}|${task.note}|$ymdStart - $hmStart|$ymdEnd - $hmEnd|";
+
+    List<tz.TZDateTime> tzList = [tzStart, tzEnd];
+    for (int i = 0; i < tzList.length; i++) {
+      int id = scheduledTask[task.id]![i];
+      tz.TZDateTime _tz = tzList[i];
+
+      String ymdHm = _tz == tzStart ? ymdHmStart : ymdHmEnd;
+      String title =  _tz == tzStart
+              ? 'You have incoming task at ${hmStart}'
+              : 'Your task end at ${hmEnd}';
+
+      if(ymdHm == ymdHmNow) {
+       displayNotification(title: title, body: 'Tap for more details', payload: payload);
+      } else {
+      if (tzNow.isBefore(_tz)) {
+        flutterLocalNotificationsPlugin.zonedSchedule(
+          id,
+          title,
+          'Tap for more details',
+          _tz,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'your channel id',
+              'your channel name',
+              color: Colors.grey,
+              importance: Importance.max,
+              priority: Priority.high,
+            ),
           ),
-        ),
-        androidAllowWhileIdle: true,
-        uiLocalNotificationDateInterpretation:
-            UILocalNotificationDateInterpretation.absoluteTime,
-        matchDateTimeComponents: DateTimeComponents.time,
-        payload: "${task.title}|${task.note}|${task.startTime}|",
-      );
+          androidAllowWhileIdle: true,
+          uiLocalNotificationDateInterpretation:
+              UILocalNotificationDateInterpretation.absoluteTime,
+          matchDateTimeComponents: DateTimeComponents.time,
+          payload:
+              "${task.title}|${task.note}|$ymdStart - $hmStart|$ymdEnd - $hmEnd|",
+        );
+      }
+      }
     }
   }
 
@@ -194,15 +232,15 @@ class SecondScreenState extends State<SecondScreen> {
             height: 40,
           ),
           Column(children: const [
-            Text("Hello, Anonymous",
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.w800,
-                  // color: Color(0xFF162339)),
-                )),
-            SizedBox(
-              height: 10,
-            ),
+            // Text("Hello, Anonymous",
+            //     style: TextStyle(
+            //       fontSize: 26,
+            //       fontWeight: FontWeight.w800,
+            //       // color: Color(0xFF162339)),
+            //     )),
+            // SizedBox(
+            //   height: 10,
+            // ),
             Text("You have a reminder",
                 style: TextStyle(
                   fontSize: 18,
@@ -230,7 +268,7 @@ class SecondScreenState extends State<SecondScreen> {
                         ),
                         Text(
                           "Title",
-                          style: TextStyle(color: Colors.white, fontSize: 28),
+                          style: TextStyle(color: Colors.white, fontSize: 26),
                         )
                       ],
                     ),
@@ -239,10 +277,10 @@ class SecondScreenState extends State<SecondScreen> {
                     ),
                     Text(
                       _payload.toString().split("|")[0],
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      style: const TextStyle(color: Colors.white, fontSize: 23),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 15,
                     ),
                     Row(
                       children: const [
@@ -252,19 +290,19 @@ class SecondScreenState extends State<SecondScreen> {
                         ),
                         Text(
                           "Description",
-                          style: TextStyle(color: Colors.white, fontSize: 28),
+                          style: TextStyle(color: Colors.white, fontSize: 26),
                         )
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 10,
                     ),
                     Text(
                       _payload.toString().split("|")[1],
-                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                      style: const TextStyle(color: Colors.white, fontSize: 23),
                     ),
                     const SizedBox(
-                      height: 20,
+                      height: 15,
                     ),
                     Row(
                       children: const [
@@ -274,16 +312,42 @@ class SecondScreenState extends State<SecondScreen> {
                           width: 10,
                         ),
                         Text(
-                          "Date",
-                          style: TextStyle(color: Colors.white, fontSize: 28),
+                          "Start date",
+                          style: TextStyle(color: Colors.white, fontSize: 26),
                         )
                       ],
                     ),
                     const SizedBox(
-                      height: 20,
+
+                      height: 10,
                     ),
                     Text(
                       _payload.toString().split("|")[2],
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                     const SizedBox(
+
+                      height: 15,
+                    ),
+                    Row(
+                      children: const [
+                        Icon(Icons.calendar_today,
+                            size: 28, color: Colors.white),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "End date",
+                          style: TextStyle(color: Colors.white, fontSize: 26),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+
+                      height: 10,
+                    ),
+                    Text(
+                      _payload.toString().split("|")[3],
                       style: const TextStyle(color: Colors.white, fontSize: 20),
                     )
                   ]),

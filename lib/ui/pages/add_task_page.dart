@@ -7,7 +7,7 @@ import 'package:orbit/models/task.dart';
 import 'package:orbit/ui/theme.dart';
 import 'package:orbit/ui/widgets/button.dart';
 import 'package:orbit/ui/widgets/input_field.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 import 'package:orbit/ui/pages/home_page.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -23,26 +23,14 @@ class _AddTaskPageState extends State<AddTaskPage> {
   final TextEditingController _noteController = TextEditingController();
 
   DateTime _selectedDate = DateTime.now();
-  //String _startTime = DateFormat("hh:mm").format(DateTime.now());
-  //_startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
-  String _startTime = DateFormat('hh:mm a').format(DateTime.now()).toString();
 
-  String _endTime = "9:30 AM";
+  DateTime _startDate = DateTime.now();
+  DateTime _endDate = DateTime.now().add(Duration(minutes: 5));
+
+  late String _startTime = DateFormat('hh:mm a').format(_startDate).toString();
+  late String _endTime = DateFormat('hh:mm a').format(_endDate).toString();
+
   int _selectedColor = 0;
-
-  int _selectedRemind = 5;
-  List<int> remindList = [
-    5,
-    10,
-    15,
-    20,
-  ];
-
-  String _selectedRepeat = 'None';
-  List<String> repeatList = [
-    'None',
-    'Daily',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +51,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                 "Add Task",
                 style: headingTextStyle,
               ),
-              SizedBox(
+              const SizedBox(
                 height: 8,
               ),
               InputField(
@@ -75,28 +63,32 @@ class _AddTaskPageState extends State<AddTaskPage> {
                   title: "Note",
                   hint: "Enter note here.",
                   controller: _noteController),
-              InputField(
-                title: "Date",
-                hint: DateFormat('dd/MM/yyyy').format(_selectedDate),
-                widget: IconButton(
-                  icon: (Icon(
-                    FlutterIcons.calendar_ant,
-                    color: Colors.grey,
-                  )),
-                  onPressed: () {
-                    //_showDatePicker(context);
-                    _getDateFromUser();
-                  },
-                ),
-              ),
               Row(
                 children: [
+                  Expanded(
+                    child: InputField(
+                      title: "Start Date",
+                      hint: DateFormat('dd/MM/yyyy').format(_startDate),
+                      widget: IconButton(
+                        icon: (const Icon(
+                          FlutterIcons.calendar_ant,
+                          color: Colors.grey,
+                        )),
+                        onPressed: () {
+                          _getDateFromUser(isStartTime: true);
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 12,
+                  ),
                   Expanded(
                     child: InputField(
                       title: "Start Time",
                       hint: _startTime,
                       widget: IconButton(
-                        icon: (Icon(
+                        icon: (const Icon(
                           FlutterIcons.clock_faw5,
                           color: Colors.grey,
                         )),
@@ -106,8 +98,27 @@ class _AddTaskPageState extends State<AddTaskPage> {
                         },
                       ),
                     ),
+                  )
+                ],
+              ),
+              Row(
+                children: [
+                  Expanded(
+                    child: InputField(
+                      title: "End Date",
+                      hint: DateFormat('dd/MM/yyyy').format(_endDate),
+                      widget: IconButton(
+                        icon: (const Icon(
+                          FlutterIcons.calendar_ant,
+                          color: Colors.grey,
+                        )),
+                        onPressed: () {
+                          _getDateFromUser(isStartTime: false);
+                        },
+                      ),
+                    ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 12,
                   ),
                   Expanded(
@@ -115,7 +126,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
                       title: "End Time",
                       hint: _endTime,
                       widget: IconButton(
-                        icon: (Icon(
+                        icon: (const Icon(
                           FlutterIcons.clock_faw5,
                           color: Colors.grey,
                         )),
@@ -154,30 +165,55 @@ class _AddTaskPageState extends State<AddTaskPage> {
   }
 
   _validateInputs() {
-    if (_titleController.text.isNotEmpty && _noteController.text.isNotEmpty) {
-      _addTaskToDB();
-      Get.back();
-    } else if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
+    if (_titleController.text.isEmpty || _noteController.text.isEmpty) {
       Get.snackbar(
         "Required",
         "All fields are required.",
         snackPosition: SnackPosition.BOTTOM,
       );
-    } else {
-      print("############ SOMETHING BAD HAPPENED #################");
+      return;
     }
+
+    
+    if(_startDate.isAfter(_endDate)) {
+      Get.snackbar(
+        "Invalid datetime",
+        "Start date cannot be after end date",
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    // DateTime _now = new DateTime.now();
+
+    // DateTime start = DateFormat('dd/MM/yyyy HH:mm aa')
+    //     .parse('${task.date} ${task.startTime}');
+    // DateTime end =
+    //     DateFormat('dd/MM/yyyy HH:mm aa').parse('${task.date} ${task.endTime}');
+
+    // tz.TZDateTime tzStart = tz.TZDateTime(
+    //     tz.local, _now.year, _now.month, _now.day, start.hour, start.minute);
+
+    // tz.TZDateTime tzEnd = tz.TZDateTime(
+    //     tz.local, _now.year, _now.month, _now.day, end.hour, end.minute);
+
+    // tz.TZDateTime tzNow = tz.TZDateTime(tz.local, _now.year, )
+
+
+
+    _addTaskToDB();
+    Get.back();
   }
 
   _addTaskToDB() async {
+    DateTime startDate = DateFormat('MM/dd/yyyy hh:mm a').parse('${DateFormat.yMd().format(_startDate)} $_startTime');
+    DateTime endDate = DateFormat('MM/dd/yyyy hh:mm a').parse('${DateFormat.yMd().format(_endDate)} $_endTime');
     await _taskController.addTask(
       task: Task(
         note: _noteController.text,
         title: _titleController.text,
-        date: DateFormat.yMd('en_US').format(_selectedDate),
-        startTime: _startTime,
-        endTime: _endTime,
-        remind: _selectedRemind,
-        repeat: _selectedRepeat,
+        startDate: startDate.toString(),
+        endDate: endDate.toString(),
         color: _selectedColor,
         isCompleted: 0,
       ),
@@ -190,7 +226,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
         "Color",
         style: titleTextStle,
       ),
-      SizedBox(
+      const SizedBox(
         height: 8,
       ),
       Wrap(
@@ -242,7 +278,9 @@ class _AddTaskPageState extends State<AddTaskPage> {
         ),
         actions: [
           Icon(
-              Get.isDarkMode ? FlutterIcons.user_circle_faw : FlutterIcons.user_circle_o_faw,
+              Get.isDarkMode
+                  ? FlutterIcons.user_circle_faw
+                  : FlutterIcons.user_circle_o_faw,
               color: Get.isDarkMode ? Colors.white : darkGreyClr),
           const SizedBox(
             width: 20,
@@ -253,7 +291,7 @@ class _AddTaskPageState extends State<AddTaskPage> {
   double toDouble(TimeOfDay myTime) => myTime.hour + myTime.minute / 60.0;
 
   _getTimeFromUser({required bool isStartTime}) async {
-    var _pickedTime = await _showTimePicker();
+    var _pickedTime = await _showTimePicker(isStartTime: isStartTime);
     String _formatedTime = _pickedTime.format(context);
     if (isStartTime) {
       setState(() {
@@ -263,31 +301,37 @@ class _AddTaskPageState extends State<AddTaskPage> {
       setState(() {
         _endTime = _formatedTime;
       });
-      //_compareTime();
     }
   }
 
-  _showTimePicker() async {
+  _showTimePicker({required bool isStartTime}) async {
     return showTimePicker(
       initialTime: TimeOfDay(
-          hour: int.parse(_startTime.split(":")[0]),
-          minute: int.parse(_startTime.split(":")[1].split(" ")[0])),
+          hour: isStartTime ? _startDate.hour : _endDate.hour,
+          minute: isStartTime ? _startDate.minute : _endDate.minute),
       initialEntryMode: TimePickerEntryMode.input,
       context: context,
     );
   }
 
-  _getDateFromUser() async {
+  _getDateFromUser({required bool isStartTime}) async {
     final DateTime? _pickedDate = await showDatePicker(
         context: context,
-        initialDate: _selectedDate,
+        initialDate: isStartTime ? _startDate : _endDate,
         initialDatePickerMode: DatePickerMode.day,
         firstDate: DateTime(2015),
         lastDate: DateTime(2101));
 
     if (_pickedDate == null) return;
-    setState(() {
-      _selectedDate = _pickedDate;
-    });
+
+    if(isStartTime == true) {
+      setState(() {
+        _startDate = _pickedDate;
+      });
+    } else {
+      setState(() {
+        _endDate = _pickedDate;
+      });
+    }
   }
 }
