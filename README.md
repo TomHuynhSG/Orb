@@ -20,11 +20,11 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 
 ## 🌟 Animation Screenshots
 
-### App Overview & Add Task
+### App Overview (Change Theme, Filter by Day, Add Task)
 
 <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/app_overview.gif?raw=true" width="230">
 
-### Task Interaction 
+### Task Interaction (Notification, View, Complete and Delete)
 <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/task_interaction.gif?raw=true" width="230">
 
 ## 🔮Future Plan
