@@ -40,3 +40,5 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 - Do Minh Nguyet - dominhnguyet435382@gmail.com
 - Vu Lam Chi Tai - duhkyv@gmail.com
 - Do Tuan Kiet - huyhoang661966@gmail.com
+
+With the help of the mentor Vu Tuan Minh - vtminh1805@gmail.com 👏
