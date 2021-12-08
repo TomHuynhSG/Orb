@@ -35,6 +35,18 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 - Chart show the task complete percentage per day and line graph per month
 - Change tab color when the status is Complete
 
+## 🔩 Build & Run App
+
+- Make sure get important libraries from pubspec.yaml
+```
+flutter pub get
+```
+
+- Run the flutter app with target deployment (Web Browser, Android, iOS)
+```
+flutter run --no-sound-null-safety
+```
+
 ## 🏆 DevFest Team 11
 - Huynh Nguyen Minh Thong - tomhuynhsg@gmail.com
 - Do Minh Nguyet - dominhnguyet435382@gmail.com
