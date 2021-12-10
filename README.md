@@ -7,15 +7,15 @@
 ## 🪐Description
 
 Orb is an easy-to-use task manager app that help you manage your daily struggles, make it easier for you to achieve success. Orb posseses these following features:
-- Dark/Light theme
 
-<img src="https://i.imgur.com/dUkMVdQ.png" width="230" > <img src="https://i.imgur.com/zIaiQ1B.png" width="230" >
+<img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_white_empty.png?raw=true" width="230" > <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_black_empty.png?raw=true" width="230" >
 
 ## Download the latest release
 
 [![Latest release](https://img.shields.io/github/v/release/TomHuynhSG/flutter_project_devfest.svg)](https://github.com/TomHuynhSG/flutter_project_devfest/releases/latest)
 
 ## 🔧 Current Functionality
+- Dark/Light theme
 - Scrollable calendar match with your time zone
 - Allow adding multiple tasks daily include title, note, date, start/end time, and tab color 
 - Pop up notification to notify start/end time
@@ -24,12 +24,74 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 
 ## 🌟 Animation Screenshots
 
-### App Overview (Change Theme, Filter by Day, Add Task)
 
-<img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/app_overview.gif?raw=true" width="230">
 
-### Task Interaction (Notification, View, Complete and Delete)
-<img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/task_interaction.gif?raw=true" width="230">
+### App Overview
+
+
+<table>
+  <tr>
+    <td>White Mode</td>
+     <td>Dark Mode</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_white_full.png?raw=true" width="230"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_black_full.png?raw=true" width="230"></td>
+   </tr>
+
+ </table>
+
+
+### Add Task with Beautiful UI
+<table>
+  <tr>
+    <td>Time UI</td>
+     <td>Form for Task Creation</td>
+     <td>Calendar UI</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/clock_ui.png?raw=true" width="230"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/form_ui.png?raw=true" width="230"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/calendar_ui.png?raw=true" width="230"></td>
+   </tr>
+
+ </table>
+
+<img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/Form.PNG?raw=true" width="600">
+
+### Notification for Start Date and End Date
+
+
+
+<table>
+  <tr>
+    <td>Notification Pop-up</td>
+     <td>Notification Message</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/noti.png?raw=true" width="300"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/noti_message.png?raw=true" width="300"></td>
+   </tr>
+ </table>
+
+
+### Live Demo (Animation GIF)
+
+<table>
+  <tr>
+    <td>Filtering by Day</td>
+     <td>Mark "Completed" or Delete Task</td>
+     <td>Full Live Demo for all features</td>
+  </tr>
+  <tr>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/one-click-filtering.gif?raw=true" width="230"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/complete-delete.gif?raw=true" width="230"></td>
+    <td><img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/live-demo.gif?raw=true" width="230"></td>
+   </tr>
+
+ </table>
+
+
 
 ## 🔮Future Plan
 - Sign up/log in page
