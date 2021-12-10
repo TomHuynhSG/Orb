@@ -1,20 +1,26 @@
-# Orb - Send your tasks into orbit 
+# Orb
 
 <p align="center">
   <img width="100" src="https://i.imgur.com/EN1OWqc.png">
 </p>
 
+<p align="center">"Let your task orbit!"</p>
+
 ## 🪐Description
 
-Orb is an easy-to-use task manager app that help you manage your daily struggles, make it easier for you to achieve success. Orb posseses these following features:
+Orb is an easy-to-use task manager app that help you manage your daily struggles to get your things done effortlessly with minimal and modern UI. Let's send your tasks back to their orbits!
 
 <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_white_empty.png?raw=true" width="230" > <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_black_empty.png?raw=true" width="230" >
 
-## Download the latest release
+## 📱 Download the latest release
 
+Click here to download the APK file to install on your phone:
+\
 [![Latest release](https://img.shields.io/github/v/release/TomHuynhSG/flutter_project_devfest.svg)](https://github.com/TomHuynhSG/flutter_project_devfest/releases/latest)
 
 ## 🔧 Current Functionality
+
+Orb have these following features:
 - Dark/Light theme
 - Scrollable calendar match with your time zone
 - Allow adding multiple tasks daily include title, note, date, start/end time, and tab color 
@@ -22,7 +28,7 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 - Mark tasks as TODO/Complete
 - Delete tasks
 
-## 🌟 Animation Screenshots
+## 🌟 Screenshots
 
 
 
@@ -57,7 +63,6 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 
  </table>
 
-<img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/Form.PNG?raw=true" width="600">
 
 ### Notification for Start Date and End Date
 
@@ -93,13 +98,12 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 
 
 
-## 🔮Future Plan
-- Sign up/log in page
-- Profile page
-- Reminder and repeat features
-- Combine with budget manager 
-- Chart show the task complete percentage per day and line graph per month
-- Change tab color when the status is Complete
+## 🔮Next Steps
+- Add sign-up/log-in page → enhance security & privacy 
+- Customize profile page → personalized experience 
+- Repeat-tasks → save time for daily tasks 
+- Visualize task completion → induce sense of accomplishment 
+- Integrate with Budget Management → one-stop personal application
 
 ## 🔩 Build & Run App
 
@@ -113,7 +117,7 @@ flutter pub get
 flutter run --no-sound-null-safety
 ```
 
-## 🏆 DevFest Team 11
+## 🏆 DevFest Team
 - Huynh Nguyen Minh Thong - tomhuynhsg@gmail.com
 - Do Minh Nguyet - dominhnguyet435382@gmail.com
 - Vu Lam Chi Tai - duhkyv@gmail.com
