@@ -11,6 +11,10 @@ Orb is an easy-to-use task manager app that help you manage your daily struggles
 
 <img src="https://i.imgur.com/dUkMVdQ.png" width="230" > <img src="https://i.imgur.com/zIaiQ1B.png" width="230" >
 
+## Download the latest release
+
+[![Latest release](https://img.shields.io/github/v/release/TomHuynhSG/flutter_project_devfest.svg)](https://github.com/TomHuynhSG/flutter_project_devfest/releases/latest)
+
 ## 🔧 Current Functionality
 - Scrollable calendar match with your time zone
 - Allow adding multiple tasks daily include title, note, date, start/end time, and tab color 
