@@ -8,7 +8,7 @@
 
 ## 🪐Description
 
-Orb is an easy-to-use task manager app that help you manage your daily struggles to get your things done effortlessly with minimal and modern UI. Let's send your tasks back to their orbits!
+Orb is an easy-to-use task manager app that help you manage your daily struggles to get your things done effortlessly with minimal and modern UI, which is one of the winners for Google DevFest 2021! Let's send your tasks back to their orbits!
 
 <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_white_empty.png?raw=true" width="230" > <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/main_black_empty.png?raw=true" width="230" >
 
