@@ -122,7 +122,7 @@ flutter run --no-sound-null-safety
 <img src="https://github.com/TomHuynhSG/flutter_project_devfest/blob/main/screenshots/architecture.png?raw=true" width="900">
 
 ## 🏆 DevFest Team
-- Huynh Nguyen Minh Thong - tomhuynhsg@gmail.com
+- Huynh Nguyen Minh Thong (Tom Huynh) - tomhuynhsg@gmail.com
 - Do Minh Nguyet - dominhnguyet435382@gmail.com
 - Vu Lam Chi Tai - duhkyv@gmail.com
 - Do Tuan Kiet - huyhoang661966@gmail.com
